@@ -25,16 +25,25 @@ using System.Data;
 
 //String query = @"DELETE FROM [dbo].[Tbl_Product]
 //      WHERE Id=3";
+//Console.Write("Enter Username: ");
+//string userName = Console.ReadLine();
+//Console.Write("Enter Password: ");
+//string password = Console.ReadLine();
+//var request = new
+//{
+//    UserName = userName,
+//    Password= password
+//};
 
-SqlConnectionStringBuilder stringBuilder = new SqlConnectionStringBuilder
-{
-    DataSource = "2404NB600260\\SQLEXPRESS",
-    InitialCatalog = "HPPDotNetTraining",
-    UserID = "sa",
-    Password = "hpp",
-    TrustServerCertificate=true,
+//SqlConnectionStringBuilder stringBuilder = new SqlConnectionStringBuilder
+//{
+//    DataSource = "2404NB600260\\SQLEXPRESS",
+//    InitialCatalog = "HPPDotNetTraining",
+//    UserID = "sa",
+//    Password = "hpp",
+//    TrustServerCertificate=true,
 
-};
+//};
 //SqlConnection connection = new SqlConnection(stringBuilder.ConnectionString);
 //Console.WriteLine("Connection Opening....");
 //connection.Open();
@@ -68,8 +77,8 @@ SqlConnectionStringBuilder stringBuilder = new SqlConnectionStringBuilder
 
 //}
 //Console.ReadLine();
-using IDbConnection db= new SqlConnection(stringBuilder.ConnectionString);
-db.Open();
+//using IDbConnection db = new SqlConnection(stringBuilder.ConnectionString);
+//db.Open();
 //List<Product>lst= db.Query<Product>("select * from tbl_product").ToList();
 //foreach (Product item in lst)
 //{
@@ -91,7 +100,59 @@ db.Open();
 //      WHERE Id=4";
 //int result = db.Execute(query);
 
-string message = result > 0 ? "Saving Successful" : "Saving Failed";
+//string message = result > 0 ? "Saving Successful" : "Saving Failed";
+//   string query = $"Select * from Tbl_User where UserName=@UserName and Password=@Password";
+//var lst = db.Query(query,request).ToList();
+//SqlConnection connection = new SqlConnection(stringBuilder.ConnectionString);
+//connection.Open();
+//string query = $"Select * from Tbl_User where UserName=@UserName and Password=@Password";
+//SqlCommand cmd=new SqlCommand(query, connection);
+//cmd.Parameters.AddWithValue("@UserName", userName);
+//cmd.Parameters.AddWithValue("@Password", password);
 
+//SqlDataAdapter adapter=new SqlDataAdapter(cmd);
+//DataTable dt=new DataTable();
+//adapter.Fill(dt);
+//connection.Close();
+//AppDbContext db = new AppDbContext();
+AppDbContext db = new AppDbContext();
+//Select
+//var lst = db.Users.ToList();
+
+//foreach (var item in lst)
+//{
+//    Console.WriteLine(item.UserName);
+//    Console.WriteLine(item.Password);
+//}
+
+//Create
+//Console.Write("Enter Username: ");
+//string userName = Console.ReadLine();
+//Console.Write("Enter Password: ");
+//string password = Console.ReadLine();
+
+//UserDto dto = new UserDto
+//{
+//    UserName = userName,
+//    Password = password,
+//    UserId = Guid.NewGuid().ToString()
+//};
+//db.Users.Add(dto);
+//int result=db.SaveChanges();
+//Update
+Console.WriteLine("Enter UserId: ");
+string userID=Console.ReadLine();
+var item= db.Users.Where(x => x.UserId == userID).FirstOrDefault();
+if(item is null)
+{
+    Console.WriteLine("No data Found.");
+    return;
+}
+item.UserName = "Test4";
+item.Password = "test";
+db.SaveChanges();
+//Delete
+//db.Users.Remove(item);
+//db.SaveChanges();
 Console.ReadLine();
 
