@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace HPPDotNetTraining.BlogRepositoryDapper
 {
@@ -23,9 +21,7 @@ namespace HPPDotNetTraining.BlogRepositoryDapper
         public void CreateNewBlog(string title, string author, string content, List<string> tags)
         {
             if (string.IsNullOrWhiteSpace(title) || string.IsNullOrWhiteSpace(content))
-            {
                 throw new Exception("Blog title and content cannot be empty.");
-            }
 
             var newBlog = new Blog
             {

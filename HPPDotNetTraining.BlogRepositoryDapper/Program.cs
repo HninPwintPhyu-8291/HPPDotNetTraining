@@ -1,67 +1,47 @@
-﻿using HPPDotNetTraining.BlogRepositoryDapper;
-using Microsoft.Data.SqlClient;
+﻿using System;
+using System.Collections.Generic;
 
-public class Program
+namespace HPPDotNetTraining.BlogRepositoryDapper
 {
-    public static void Main(string[] args)
+    class Program
     {
-        // 1. Repository ကို အရင်ဆုံး instance တစ်ခု တည်ဆောက်ပါ။
-        // ဒါကတော့ ကျွန်တော်တို့ရဲ့ Data Layer ဖြစ်ပါတယ်။
-        IBlogRepository blogRepository = new BlogRepository();
-
-        // 2. Service Layer ကို တည်ဆောက်ပြီး အပေါ်က Repository ကို Dependency Injection အနေနဲ့ ထည့်ပေးလိုက်ပါ။
-        BlogService blogService = new BlogService(blogRepository);
-
-        Console.WriteLine("--- ရှိပြီးသော Blog များ ---");
-        PrintBlogs(blogService.GetAllAvailableBlogs());
-
-        // --- Blog အသစ်တစ်ခု ဖန်တီးခြင်း ---
-        Console.WriteLine("--- Blog အသစ်တစ်ခု ဖန်တီးခြင်း ---");
-        var newTags = new List<string> { "Console App", "Example" };
-        blogService.CreateNewBlog("My New Blog", "Admin", "This is a new blog created from console.", newTags);
-        Console.WriteLine("Blog အသစ် (ID: 3) ကို ဖန်တီးပြီးပါပြီ။");
-
-        Console.WriteLine("--- လက်ရှိ Blog များအားလုံး ---");
-        PrintBlogs(blogService.GetAllAvailableBlogs());
-
-        // --- Blog တစ်ခုကို ID ဖြင့် ရှာဖွေခြင်း ---
-        Console.WriteLine("--- Blog (ID: 1) ကို ရှာဖွေခြင်း ---");
-        var foundBlog = blogService.GetBlogDetails(1);
-        if (foundBlog != null)
+        static void Main(string[] args)
         {
-            Console.WriteLine($"တွေ့ရှိသော Blog: {foundBlog.BlogTitle} (By {foundBlog.BlogAuthor})");
-        }
+            IBlogRepository repository = new BlogRepository();
+            BlogService service = new BlogService(repository);
 
-        // --- Blog တစ်ခုကို Update လုပ်ခြင်း ---
-        Console.WriteLine("--- Blog (ID: 1) ကို Update လုပ်ခြင်း ---");
-        var blogToUpdate = blogService.GetBlogDetails(1);
-        if (blogToUpdate != null)
-        {
-            blogToUpdate.BlogTitle = "UPDATED: Repository Pattern Explained";
-            blogRepository.UpdateBlog(blogToUpdate); // Service ကနေတစ်ဆင့်လည်းခေါ်နိုင်အောင် method ထပ်ထည့်နိုင်ပါတယ်။
-            Console.WriteLine("Blog (ID: 1) ကို Update လုပ်ပြီးပါပြီ။");
-            var updatedBlog = blogService.GetBlogDetails(1);
-            Console.WriteLine($"Update ဖြစ်သွားသော Title: {updatedBlog.BlogTitle}");
-        }
+            // CREATE
+            service.CreateNewBlog("Dapper Blog", "Hnin", "This blog is created using Dapper.", new List<string> { "Dapper", "C#", ".NET" });
 
-        // --- Blog တစ်ခုကို ဖျက်ခြင်း ---
-        Console.WriteLine("--- Blog (ID: 2) ကို ဖျက်ခြင်း ---");
-        blogRepository.DeleteBlog(2); // Service ကနေတစ်ဆင့်လည်းခေါ်နိုင်အောင် method ထပ်ထည့်နိုင်ပါတယ်။
-        Console.WriteLine("Blog (ID: 2) ကို ဖျက်ပြီးပါပြီ။");
+            // READ ALL
+            var allBlogs = service.GetAllAvailableBlogs();
+            Console.WriteLine("\n--- All Blogs ---");
+            foreach (var blog in allBlogs)
+            {
+                Console.WriteLine($"ID        : {blog.BlogId}");
+                Console.WriteLine($"Title     : {blog.BlogTitle}");
+                Console.WriteLine($"Author    : {blog.BlogAuthor}");
+                Console.WriteLine($"Published : {blog.PublishedDate}");
+                Console.WriteLine($"Tags      : {string.Join(", ", blog.Tags)}");
+                Console.WriteLine($"Content   : {blog.BlogContent}");
+                Console.WriteLine(new string('-', 50));
+            }
 
-        Console.WriteLine("--- နောက်ဆုံး ကျန်ရှိသော Blog များ ---");
-        PrintBlogs(blogService.GetAllAvailableBlogs());
-    }
+            // READ BY ID
+            var blogDetails = service.GetBlogDetails(1);
+            if (blogDetails != null)
+            {
+                Console.WriteLine($"\nBlog #1: {blogDetails.BlogTitle}");
+            }
 
-    // Blog စာရင်းကို Console မှာ ထုတ်ပေးမယ့် Helper Method
-    public static void PrintBlogs(IEnumerable<Blog> blogs)
-    {
-        foreach (var blog in blogs)
-        {
-            Console.WriteLine($"ID: {blog.BlogId}, Title: {blog.BlogTitle}, Author: {blog.BlogAuthor}");
-            Console.WriteLine($"    Content: {blog.BlogContent.Substring(0, Math.Min(30, blog.BlogContent.Length))}...");
-            Console.WriteLine($"    Tags: [{string.Join(", ", blog.Tags)}]");
-            Console.WriteLine();
+            // UPDATE
+            blogDetails.BlogTitle = "Updated Blog Title";
+            repository.UpdateBlog(blogDetails);
+            Console.WriteLine("Blog updated.");
+
+            // DELETE
+            repository.DeleteBlog(blogDetails.BlogId);
+            Console.WriteLine("Blog deleted.");
         }
     }
 }
